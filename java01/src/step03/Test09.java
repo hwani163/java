@@ -1,11 +1,11 @@
 package step03;
-/**
- *    배정 연산자 단축 표기법
- *    x = x + y
- *    => 단축키  : x +=y
- *    += , -= , *= , /= , >>= %= .....
- *  
- * */
+
+/*
+ * 배정 연산자 단축 표기법
+ * x = x + y
+ * => 단축키 x += y
+ * - +=, -=, *=, /=, %=, >>=, ...
+ */
 public class Test09 {
 
   public static void main(String[] args) {
@@ -14,8 +14,7 @@ public class Test09 {
     
     int y = 20;
     y += 30;
-    
-    System.out.printf("%d , %d\n" , x , y);
+    System.out.printf("%d, %d\n", x, y);
 
   }
 

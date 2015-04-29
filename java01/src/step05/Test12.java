@@ -1,44 +1,45 @@
 package step05;
 
+/*
+ * 프로그램 아규먼트를 이용하여 인스턴스 생성하기
+ */
+
 public class Test12 {
-  
-  
-  static class Score{
+  //사용자 정의 자료형
+  static class Score {
     String name;
-    int math;
     int kor;
     int eng;
-    float avg;
-    int sum;    
+    int math;
+    int sum;
+    float average;
   }
-
+  
+  static void printScore(Score score) {
+    System.out.printf("이름: %s\n", score.name);
+    System.out.printf("국어: %d\n", score.kor);
+    System.out.printf("영어: %d\n", score.eng);
+    System.out.printf("수학: %d\n", score.math);
+    System.out.printf("총점: %d, 평균: %.1f\n", score.sum, score.average);
+  }
+  
   public static void main(String[] args) {
-    
-    Score sc = new Score();
-    sc.name = args[0];
-    sc.math = Integer.parseInt(args[1]);
-    sc.kor = Integer.parseInt(args[2]);
-    sc.eng = Integer.parseInt(args[3]);
-    sc.sum = (sc.math+sc.kor+sc.eng);
-    sc.avg = sc.sum/3;
-    
-    printScore(sc);
+    Score score = new Score();
+    score.name = args[0];
+    score.kor = Integer.parseInt(args[1]);
+    score.eng = Integer.parseInt(args[2]);
+    score.math = Integer.parseInt(args[3]);
+    score.sum = score.kor + score.eng + score.math;
+    score.average = score.sum / 3f;
+
+    printScore(score);
     
 
-  }
-
-   static void printScore(Score sc) {
-     
-     
-     
-     System.out.println("이름 : "+sc.name);
-     System.out.println("수학 : "+sc.math);
-     System.out.println("국어 : "+sc.kor);
-     System.out.println("영어 : "+sc.eng);     
-     System.out.printf("총점 : %d 평균 : %.1f",sc.sum,sc.avg);
-     
-    
-    
   }
 
 }
+
+
+
+
+
