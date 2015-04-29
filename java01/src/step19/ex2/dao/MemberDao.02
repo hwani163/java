@@ -1,0 +1,191 @@
+package step19.ex2.dao;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+
+import step19.ex2.DaoException;
+import step19.ex2.domain.User;
+
+// 커넥션 관리 기법:
+// 1단계. 인스턴스 당 한 개의 커넥션
+// => 이 방식의 문제점
+//    1) Dao 당 한 개의 커넥션을 보유한다.
+//       Dao 개수가 늘 수록 커넥션 개수가 증가한다.
+//    2) 자주 사용하지 않는 Dao의 경우 커넥션을 낭비하는 문제가 발생한다.
+//    3) 단일 애플리케이션은 순차적으로 메서드가 호출되기 때문에,
+//       메서드끼리 커넥션을 공유하더라도 문제가 되지 않는다.
+//    4) 서버 시스템의 경우 동시에 여러 사용자가 서비스를 요청하게 되고,
+//       같은 메서드를 동시에 호출할 수 있다. 
+//       => SQL 작업을 수행하다가 오류가 발생하면,
+//       같은 커넥션을 이용하는 다른 SQL 작업에도 영향을 끼친다.
+// => 해결책:
+//    SQL 작업 당 한 개의 커넥션을 보유 
+//    => 수 만개의 작업? 수 만개의 커넥션 객체? => no no....
+//    => 대여 방식을 통해 커넥션을 공유하기! "Pooling 기법"
+public class MemberDao {
+  Connection con;
+  
+  public MemberDao() {
+    try {
+      DriverManager.registerDriver(new com.mysql.jdbc.Driver());
+      con = DriverManager.getConnection(
+          "jdbc:mysql://localhost:3306/java67db?useUnicode=true&characterEncoding=utf8", 
+          "java67", 
+          "java67");
+    } catch (SQLException e) {
+      throw new DaoException(e);
+    }
+  }
+  
+  public void destroy() {
+    try {con.close();} catch (Exception e) {}
+  }
+  
+  public void insert(final User user) {
+    PreparedStatement stmt = null;
+
+    try {
+      stmt = con.prepareStatement(
+          "INSERT INTO USERS (NAME,EMAIL,TEL,HP,TWIT) VALUES (?,?,?,?,?)");
+
+      stmt.setString(1, user.getName());
+      stmt.setString(2, user.getEmail());
+      stmt.setString(3, user.getTel());
+      stmt.setString(4, user.getHomepage());
+      stmt.setString(5, user.getTwitter());
+
+      stmt.executeUpdate();
+
+    } catch (SQLException e) {
+      throw new DaoException(e);
+
+    } finally {
+      try {stmt.close();} catch (Exception e) {}
+    }
+  }
+
+  public ArrayList<User> selectList() {
+    ArrayList<User> list = new ArrayList<User>();
+    Statement stmt = null;
+    ResultSet rs = null;
+
+    try {
+      stmt = con.createStatement();
+
+      rs = stmt.executeQuery(
+          "SELECT uno,name,email,tel FROM users");
+
+      while (rs.next()) {
+        User user = new User();
+        user.setNo(rs.getInt("uno"));
+        user.setName(rs.getString("name"));
+        user.setEmail(rs.getString("email"));
+        user.setTel(rs.getString("tel"));
+
+        list.add(user);
+      }
+
+      return list;
+
+    } catch (SQLException e) {
+      throw new DaoException(e); 
+
+    } finally {
+      try {rs.close();} catch (Exception e) {}
+      try {stmt.close();} catch (Exception e) {}
+    }
+
+  }
+
+  public User select(int no) {
+    PreparedStatement stmt = null;
+    ResultSet rs = null;
+
+    try {
+      stmt = con.prepareStatement(
+          "SELECT uno,name,email,tel,hp,twit FROM users WHERE uno = ?");
+      stmt.setInt(1, no);
+      rs = stmt.executeQuery();
+
+      if (rs.next()) {
+        User user = new User();
+        user.setNo(rs.getInt("uno"));
+        user.setName(rs.getString("name"));
+        user.setEmail(rs.getString("email"));
+        user.setTel(rs.getString("tel"));
+        user.setHomepage(rs.getString("hp"));
+        user.setTwitter(rs.getString("twit")); 
+        return user;
+        
+      } else {
+        return null;
+      }
+      
+    } catch (SQLException e) {
+      throw new DaoException(e); 
+
+    } finally {
+      try {rs.close();} catch (Exception e) {}
+      try {stmt.close();} catch (Exception e) {}
+    }
+  }
+
+  public int delete(int no) {
+    PreparedStatement stmt = null;
+
+    try {
+      stmt = con.prepareStatement(
+          "DELETE FROM USERS WHERE UNO = ?");
+      stmt.setInt(1, no);
+      return stmt.executeUpdate();
+      
+    }catch (SQLException e) {
+      throw new DaoException(e); 
+
+    } finally {
+      try {stmt.close();} catch (Exception e) {}
+    }
+  }
+
+  public int update(User user) {
+    PreparedStatement stmt = null;
+
+    try {
+      stmt = con.prepareStatement(
+          "UPDATE USERS SET NAME = ?, EMAIL = ?, TEL = ?, HP = ?, TWIT = ?"
+          + " WHERE UNO = ?");
+      stmt.setString(1, user.getName());
+      stmt.setString(2, user.getEmail());
+      stmt.setString(3, user.getTel());
+      stmt.setString(4, user.getHomepage());
+      stmt.setString(5, user.getTwitter());
+      stmt.setInt(6, user.getNo());
+      
+      return stmt.executeUpdate();
+      
+    }catch (SQLException e) {
+      throw new DaoException(e); 
+
+    } finally {
+      try {stmt.close();} catch (Exception e) {}
+    }
+    
+  }
+
+}
+
+
+
+
+
+
+
+
+
+
+
