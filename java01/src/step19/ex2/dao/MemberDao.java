@@ -32,7 +32,6 @@ public class MemberDao {
       con = dbPool.getConnection(); // DBConnectionPool에서 커넥션 객체를 빌린다.
       stmt = con.prepareStatement(
           "INSERT INTO USERS (NAME,EMAIL,TEL,HP,TWIT) VALUES (?,?,?,?,?)");
-
       stmt.setString(1, user.getName());
       stmt.setString(2, user.getEmail());
       stmt.setString(3, user.getTel());

@@ -1,4 +1,4 @@
-package step22.ex1.ex2;
+package step22.ex2;
 
 public class Hello {
 

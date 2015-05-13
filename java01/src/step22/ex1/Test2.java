@@ -14,7 +14,7 @@ public class Test2 {
     
     ByteArrayOutputStream out = new ByteArrayOutputStream();
     BufferedInputStream imageSource = 
-        new BufferedInputStream(new FileInputStream("./temp/pic02.jpg"));
+        new BufferedInputStream(new FileInputStream("C:\\Users\\hwan\\git\\homeWork\\web2\\WebContent\\step04\\img\\noimg.gif"));
     
     int b = -1;
     while((b = imageSource.read()) != -1) {
